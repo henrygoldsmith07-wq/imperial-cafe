@@ -1,2 +1,3 @@
+# Deliberately blocks indexing before owner launch; remove at approved launch.
 User-agent: *
 Disallow: /

@@ -1,10 +1,16 @@
 'use strict';
-const form=document.querySelector('#visit-form'),date=document.querySelector('#date');
-const today=new Date().toLocaleDateString('en-CA',{timeZone:'Europe/London'});date.min=today;const latest=new Date();latest.setDate(latest.getDate()+365);date.max=latest.toLocaleDateString('en-CA',{timeZone:'Europe/London'});
+const form=document.querySelector('#visit-form'),date=document.querySelector('#date'),nameField=document.querySelector('#name');
+const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'});
+const londonISO=d=>{const p=Object.fromEntries(parts.formatToParts(d).map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;};
+const today=londonISO(new Date());
+const [y,m,dd]=today.split('-').map(Number);
+date.min=today;date.max=new Date(Date.UTC(y,m-1,dd+365)).toISOString().slice(0,10);
 document.querySelectorAll('[data-service]').forEach(a=>a.addEventListener('click',()=>{document.querySelector('#service').value=a.dataset.service}));
-form.addEventListener('submit',e=>{e.preventDefault();if(document.querySelector('#website').value)return;if(!form.reportValidity())return;
-const name=document.querySelector('#name').value.trim();if(!name){document.querySelector('#name').setCustomValidity('Please enter your name.');document.querySelector('#name').reportValidity();return;}
-const d=new Date(date.value+'T12:00:00');if(!Number.isFinite(d.getTime())||date.value<today||date.value>date.max){date.setCustomValidity('Choose today or a future day.');date.reportValidity();return;}
-const note="Imperial Cafe"+' — visit note\nName: '+name+'\nPreferred day: '+d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'\nEnquiry: '+document.querySelector('#service').value+'\n'+document.querySelector('#notes').value.trim();
-const result=document.querySelector('#result');result.replaceChildren();const h=document.createElement('h3');h.textContent='Your note is ready';const pre=document.createElement('pre');pre.textContent=note;const p=document.createElement('p');p.textContent='Call to confirm. This has not been sent.';const call=document.createElement('a');call.href='tel:+442920463900';call.className='button';call.textContent='Call 029 2046 3900';const copy=document.createElement('button');copy.type='button';copy.className='button secondary';copy.textContent='Copy note';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(note);copy.textContent='Note copied';}catch{copy.textContent='Select the note above to copy';}});const actions=document.createElement('div');actions.className='actions';actions.append(call,copy);result.append(h,pre,p,actions);result.hidden=false;result.focus();});
+form.addEventListener('submit',e=>{e.preventDefault();if(document.querySelector('#website').value)return;
+nameField.setCustomValidity(nameField.value.trim()?'':'Please enter your name.');
+if(!form.reportValidity())return;
+const name=nameField.value.trim();
+const pretty=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(date.value+'T12:00:00Z'));
+const note="Imperial Cafe"+' — visit note\nName: '+name+'\nPreferred day: '+pretty+'\nEnquiry: '+document.querySelector('#service').value+'\n'+document.querySelector('#notes').value.trim();
+const result=document.querySelector('#result');result.replaceChildren();const h=document.createElement('h3');h.textContent='Your note is ready';const pre=document.createElement('pre');pre.textContent=note;const p=document.createElement('p');p.textContent='Call to confirm. This has not been sent.';const call=document.createElement('a');call.href='tel:+442920463900';call.className='button';call.textContent='Call 029 2046 3900';const copy=document.createElement('button');copy.type='button';copy.className='button secondary';copy.textContent='Copy note';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(note);copy.textContent='Note copied';}catch{copy.textContent='Select the note above to copy';}});const actions=document.createElement('div');actions.className='actions';actions.append(call,copy);result.append(h,pre,p,actions);result.hidden=false;});
 form.addEventListener('input',e=>e.target.setCustomValidity&&e.target.setCustomValidity(''));

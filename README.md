@@ -3,15 +3,40 @@
 Independent zero-dependency static site for Henry Goldsmith. Open index.html via any static server. No build or paid services required.
 
 ## Functional scope
-Forms prepare a visible request or call note. Email links open the visitor's email app; no message is automatically sent. A reference is local, not a server booking. No payments, confirmed bookings, delivery promises or invented prices.
+The form prepares a visible call note locally. Nothing is sent or booked; the note can be copied or read out over the phone. No payments, confirmed bookings, delivery promises or invented prices.
+
+## Verify locally
+Run `node verify.js` in the project root. It needs only Node.js — no install, build or network — and checks file presence, HTML/CSP/metadata integrity, CSS integrity and the form flow against a small DOM stub.
 
 ## Before owner launch
-Confirm contact details, hours, service/menu content and accessibility needs with the owner. Replace the candidate GitHub Pages canonical/social URLs with the actual deployment URL. Search indexing is blocked by robots.txt pending owner launch approval. Remove that block and submit sitemap.xml only at approved launch. No real merchant checkout is configured.
+Confirm contact details, hours, service/menu content and accessibility needs with the owner. Independent web sources corroborate the address, phone number and Facebook page, but the newest found is dated 2023; no source confirms the cafe is still trading or that the owner authorises this site.
+
+Search indexing is blocked deliberately. At approved launch, remove BOTH the `robots.txt` `Disallow: /` line and the `<meta name="robots" content="noindex,nofollow">` tag — while robots.txt blocks crawling, Google cannot read the noindex tag. Also replace the candidate GitHub Pages canonical, Open Graph and JSON-LD URLs with the real deployment URL, add a `Sitemap:` line to robots.txt, then submit and validate sitemap.xml. No merchant checkout is configured.
 
 ## Security and privacy
-No third-party scripts, fonts, trackers or card handling. Executable JavaScript is self-hosted and CSP permits only self scripts. Form input is escaped or inserted as text. Gift shortlists use localStorage; visit details stay in the current tab.
+No third-party scripts, fonts, trackers or card handling. JavaScript is self-hosted and a restrictive content security policy blocks remote scripts, connections, frames, fonts, workers and media. Form input is inserted as text only. Nothing is stored or sent; visit details stay in the current tab. External links use `rel="noopener noreferrer"`.
 
 Prepared 15 November 2026.
 
 ## Verification — 15 November 2026
 Browser checks: 375px, 390px, 768px and 1440px widths; no horizontal overflow. Form flows exercised without sending an email or calling. All local assets, scripts, JSON-LD, single h1 and external-link protections checked. Not tested: live telephone ownership, owner acceptance, live checkout, Safari/Firefox, Lighthouse, formal WCAG certification or Google Rich Results.
+
+## Verification — 16 November 2026
+Code cleanup only: removed an unreachable name-validation branch and unused theme CSS, and made the date bounds use one consistent Europe/London calendar. Node DOM-stub checks passed for date bounds, generated note text, blank/whitespace name, out-of-range date and the honeypot. Browser, device, cross-browser, Lighthouse and WCAG checks from 15 November were not repeated after this change.
+
+## Verification and research — 16 November 2026 (second pass)
+Evidence-backed changes: tightened the CSP to `default-src 'none'` with explicit self-only sources and no unused `data:` allowance; added an explicit referrer policy; gave the dark planning panel a light focus outline (the old accent ring measured 1.44:1 against it); enlarged small link targets and added bottom scroll padding so the mobile action bar cannot obscure focus; removed redundant focus handling on the live status region; corrected stale README claims about email links and localStorage.
+
+Checks re-run: static invariants (IDs, anchors, CSP, JSON-LD, external-link protections, CSS integrity) and the Node DOM-stub form harness — all passed. Text contrast was computed numerically and passes AA; the focus-ring fix addresses a measured failure. Still not done: browser, screen-reader, 320px/400% zoom, cross-browser, Lighthouse and formal WCAG testing. Research notes and the full report are in `research_notes/` and `reports/` beside this clone.
+
+## Browser verification — 16 November 2026 (third pass)
+Ran the page over a local HTTP server in Chromium. No console or CSP errors; the form produced the expected note end to end (name, enquiry, date and notes) with `role="status"` and no forced focus. The Copy note button was tested on both paths: a successful write shows "Note copied" and passes the exact note; a denied write shows "Select the note above to copy". Lighthouse scores: Accessibility **100**, Best Practices **100**, SEO **80**. The only SEO failure is the robots.txt audit, caused by the deliberate `Disallow: /` that blocks all crawling before owner launch — expected, and deliberately not changed. A screenshot was unavailable because no desktop window was visible, and no viewport-emulation tool was available, so 320px/400% zoom and mobile appearance remain unverified.
+
+## Mobile layout fix — 16 November 2026 (fourth pass)
+Measured the page in same-width iframes at 320, 375, 390 and 768px: no horizontal overflow and no text clipping in any element. That testing exposed a real bug — a global rule hid the first link in every `<nav>`, so the fixed mobile action bar showed only "Plan your visit" and omitted "Call the cafe". Scoped the rule to `header nav` in `style.css`; both actions now render at 320–390px (48px tall, no overflow), while the header navigation still collapses as intended. The `scroll-padding-bottom:100px` fix was confirmed active at mobile widths.
+
+## Final tidy — 16 November 2026 (fifth pass)
+Gave `404.html` the same strict content security policy as the main page, linked the previously orphaned `site.webmanifest` from `index.html`, and renamed the manifest to "Imperial Cafe". Browser reload confirmed the manifest resolves, the script still runs and the console is clean. A repeat Lighthouse run timed out, so the previously recorded scores stand; no new score is claimed after these cosmetic/metadata changes.
+
+## Independent review fixes — 16 November 2026 (sixth pass)
+Browser checks of the error paths confirmed the blank-name and honeypot behaviour, and that native date constraints (not custom code) reject out-of-range dates — so the unreachable custom date message was removed. A fresh-eyes review caught a regression from the earlier focus fix: the light outline had been applied to the whole dark planning panel, including the light form inside it, hiding focus on the form controls. It is now scoped to a dedicated `.planning-call` link, verified in the browser (light ring on that link, dark ring on `#name`). `verify.js` now also asserts that `app.js` is actually linked and that the light ring is not applied to the whole panel.
