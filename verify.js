@@ -39,7 +39,7 @@ assert.match(html, /id="website" tabindex="-1"/, 'honeypot not in tab order');
 for (const [label, doc] of [['index', html], ['404', notFound]]) {
   assert.match(doc, /http-equiv="Content-Security-Policy"/, `${label} CSP present`);
   assert.match(doc, /default-src 'none'/, `${label} CSP default none`);
-  for (const d of ['script-src', 'style-src', 'img-src', 'connect-src', 'frame-src', 'font-src', 'worker-src', 'media-src', 'base-uri', 'form-action', 'object-src']) {
+  for (const d of ['script-src', 'style-src', 'img-src', 'manifest-src', 'connect-src', 'frame-src', 'font-src', 'worker-src', 'media-src', 'base-uri', 'form-action', 'object-src']) {
     assert.match(doc, new RegExp(`${d} `), `${label} CSP has ${d}`);
   }
 }
@@ -77,7 +77,9 @@ assert.match(css, /min-height:24px/, 'nav link target size');
 assert.match(css, /header nav a:not\(:last-child\)\{display:none\}/, 'mobile hide scoped to header nav');
 assert.ok(!/(?<!header )nav a:not\(:last-child\)\{display:none\}/.test(css), 'no global nav-hide rule');
 assert.ok(!/localStorage|mailto:/i.test(html), 'no stale storage or email claims');
-assert.match(read('robots.txt'), /Disallow: \//, 'pre-launch indexing block present');
+const robotsBlock = /Disallow: \//.test(read('robots.txt'));
+const metaNoindex = /name="robots" content="noindex,\s*nofollow"/.test(html);
+assert.equal(robotsBlock, metaNoindex, 'indexing block is consistent in robots.txt and the meta tag (both before or both after launch)');
 assert.match(read('README.md'), /Browser verification/, 'README records browser verification');
 
 // --- DOM stub and behaviour --------------------------------------------------
@@ -170,7 +172,7 @@ assert.equal(result.hidden, true, 'honeypot blocks output');
   const deniedButton = collect(result).find(c => c.textContent === 'Copy note');
   assert.ok(deniedButton, 'copy button present after denial setup');
   await deniedButton._handlers.click();
-  assert.equal(deniedButton.textContent, 'Note selected — press Ctrl+C', 'denied label');
+  assert.equal(deniedButton.textContent, 'Note selected — copy the highlighted text', 'denied label');
   assert.equal(selectedNode, result.children.find(c => c.textContent && c.textContent.includes('visit note')), 'denied path selects the note');
 
   console.log(`PASS imperial-cafe: ${ids.length} IDs, ${(css.match(/\{/g) || []).length} CSS rules, all behaviour checks including copy`);
