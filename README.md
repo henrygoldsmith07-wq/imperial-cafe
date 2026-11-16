@@ -48,3 +48,6 @@ A final review also made the copy-denied instruction device-neutral (touch users
 
 ## Mobile section navigation — 16 November 2026
 At widths up to 760px the header collapses to the call link, so a compact second nav under the header now links directly to "Your visit" and "Find us". It is hidden by default and shown only at mobile widths; a 375px screenshot confirmed both links render, and `verify.js` guards their presence and breakpoints. The bottom action bar keeps Call and Plan.
+
+## Fresh audit — 16 November 2026
+axe-core (WCAG 2.0/2.1/2.2 A and AA plus best-practice rules) was run against the rendered page in Chromium: **0 site violations**, 41 passing rules, 0 incomplete. The single reported "region" finding belonged to the temporary audit output element, not the site. Edge headless rendering was checked at 800px and 375px and matched Chrome — header, section nav, hero, buttons and fixed action bar all render correctly with no overflow. Lighthouse could not be re-run in this environment (in-app tool timeouts and CLI execution-policy/network limits), so no new Lighthouse score is claimed.
