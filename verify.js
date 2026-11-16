@@ -50,6 +50,9 @@ for (const [label, doc] of [['index', html], ['404', notFound]]) {
   }
 }
 assert.ok(!/img-src[^;]*data:/.test(html), 'CSP drops unused data image source');
+assert.match(notFound, /<link rel="stylesheet" href="style\.css">/, '404 uses site stylesheet');
+assert.match(notFound, /<body class="diner">/, '404 uses site theme');
+assert.match(notFound, /<h1 id="not-found-title">Page not found\.<\/h1>/, '404 has a labelled heading');
 assert.match(html, /name="referrer" content="strict-origin-when-cross-origin"/, 'referrer policy present');
 assert.ok(!/<script[^>]+src="https?:/.test(html), 'no remote scripts');
 assert.match(html, /<script src="app\.js" defer>/, 'local app script included');
