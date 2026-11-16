@@ -40,3 +40,6 @@ Gave `404.html` the same strict content security policy as the main page, linked
 
 ## Independent review fixes — 16 November 2026 (sixth pass)
 Browser checks of the error paths confirmed the blank-name and honeypot behaviour, and that native date constraints (not custom code) reject out-of-range dates — so the unreachable custom date message was removed. A fresh-eyes review caught a regression from the earlier focus fix: the light outline had been applied to the whole dark planning panel, including the light form inside it, hiding focus on the form controls. It is now scoped to a dedicated `.planning-call` link, verified in the browser (light ring on that link, dark ring on `#name`). `verify.js` now also asserts that `app.js` is actually linked and that the light ring is not applied to the whole panel.
+
+## Design detail — 16 November 2026
+The three enquiry types are a set of options, not a sequence, so the list is now an unordered list without the decorative 01/02/03 markers; the CSS grid was simplified to match. Rendered desktop and mobile screenshots were reviewed, and `verify.js` guards the semantics against regression. A further Lighthouse re-run timed out, so no new score is claimed for this cosmetic change.

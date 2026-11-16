@@ -21,6 +21,9 @@ assert.equal(new Set(ids).size, ids.length, 'no duplicate IDs');
 for (const m of html.matchAll(/href="#([^"]*)"/g)) {
   if (m[1]) assert.ok(ids.includes(m[1]), `anchor #${m[1]} resolves`);
 }
+assert.match(html, /<ul class="services">/, 'enquiry types are an unordered list');
+assert.ok(!/<ol\b/.test(html), 'non-sequential items are not marked as ordered');
+assert.ok(!/>(?:01|02|03)</.test(html), 'no decorative sequence numbers');
 const labels = [...html.matchAll(/<label for="([^"]+)"/g)].map(m => m[1]);
 for (const id of ['name', 'service', 'date', 'notes']) {
   assert.ok(labels.includes(id), `control #${id} has a label`);
