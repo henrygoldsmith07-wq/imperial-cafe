@@ -88,11 +88,14 @@ const nodes = {
   '#service': el({ value: 'Breakfast enquiry' }), '#notes': el({ value: '' }), '#result': el(),
 };
 const serviceLinks = [el({ dataset: { service: 'Breakfast enquiry' } }), el({ dataset: { service: 'Lunch enquiry' } })];
+let selectedNode = null;
 global.document = {
   querySelector: sel => nodes[sel],
   querySelectorAll: sel => sel === '[data-service]' ? serviceLinks : [],
   createElement: () => el(),
+  createRange: () => ({ selectNodeContents(node) { selectedNode = node; } }),
 };
+global.getSelection = () => ({ removeAllRanges() {}, addRange() {} });
 Object.defineProperty(globalThis, 'navigator', { value: { clipboard: { writeText: async () => {} } }, configurable: true });
 require('./app.js');
 
@@ -153,7 +156,8 @@ assert.equal(result.hidden, true, 'honeypot blocks output');
   const deniedButton = collect(result).find(c => c.textContent === 'Copy note');
   assert.ok(deniedButton, 'copy button present after denial setup');
   await deniedButton._handlers.click();
-  assert.equal(deniedButton.textContent, 'Select the note above to copy', 'denied label');
+  assert.equal(deniedButton.textContent, 'Note selected — press Ctrl+C', 'denied label');
+  assert.equal(selectedNode, result.children.find(c => c.textContent && c.textContent.includes('visit note')), 'denied path selects the note');
 
   console.log(`PASS imperial-cafe: ${ids.length} IDs, ${(css.match(/\{/g) || []).length} CSS rules, all behaviour checks including copy`);
 })().catch(err => { console.error(err); process.exitCode = 1; });
