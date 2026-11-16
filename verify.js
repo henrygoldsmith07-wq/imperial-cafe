@@ -24,6 +24,12 @@ for (const m of html.matchAll(/href="#([^"]*)"/g)) {
 assert.match(html, /<ul class="services">/, 'enquiry types are an unordered list');
 assert.ok(!/<ol\b/.test(html), 'non-sequential items are not marked as ordered');
 assert.ok(!/>(?:01|02|03)</.test(html), 'no decorative sequence numbers');
+const mobileNav = html.match(/<nav class="mobile-sections"[^>]*>([\s\S]*?)<\/nav>/);
+assert.ok(mobileNav, 'mobile section nav present');
+assert.match(mobileNav[1], /href="#services"/, 'mobile nav links to services');
+assert.match(mobileNav[1], /href="#visit"/, 'mobile nav links to find-us');
+assert.match(css, /\.mobile-sections\{display:none\}/, 'mobile section nav hidden by default');
+assert.match(css, /\.mobile-sections\{display:flex/, 'mobile section nav shown at small widths');
 const labels = [...html.matchAll(/<label for="([^"]+)"/g)].map(m => m[1]);
 for (const id of ['name', 'service', 'date', 'notes']) {
   assert.ok(labels.includes(id), `control #${id} has a label`);

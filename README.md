@@ -45,3 +45,6 @@ Browser checks of the error paths confirmed the blank-name and honeypot behaviou
 The three enquiry types are a set of options, not a sequence, so the list is now an unordered list without the decorative 01/02/03 markers; the CSS grid was simplified to match. Rendered desktop and mobile screenshots were reviewed, and `verify.js` guards the semantics against regression. A further Lighthouse re-run timed out, so no new score is claimed for this cosmetic change.
 
 A final review also made the copy-denied instruction device-neutral (touch users have no Ctrl key) and tightened `verify.js`: it now checks `manifest-src` in the CSP and requires the indexing block in `robots.txt` and the `noindex` meta tag to be consistent — both present before launch, both removed after — so a half-completed launch is caught without the verifier failing once the block is lifted.
+
+## Mobile section navigation — 16 November 2026
+At widths up to 760px the header collapses to the call link, so a compact second nav under the header now links directly to "Your visit" and "Find us". It is hidden by default and shown only at mobile widths; a 375px screenshot confirmed both links render, and `verify.js` guards their presence and breakpoints. The bottom action bar keeps Call and Plan.
