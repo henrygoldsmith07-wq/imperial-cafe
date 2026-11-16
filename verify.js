@@ -79,6 +79,7 @@ assert.match(html, /class="planning-call" href="tel:/, 'dark-panel call link mar
 assert.match(css, /\.planning-call:focus-visible\{outline-color:var\(--paper\)\}/, 'light focus ring scoped to dark-panel link');
 assert.ok(!/\.planning :focus-visible/.test(css), 'light ring not applied to whole planning subtree');
 assert.match(css, /scroll-padding-bottom:100px/, 'mobile bottom scroll padding');
+assert.ok(!/scroll-padding-top/.test(css), 'no top scroll offset with a static header');
 assert.match(css, /min-height:24px/, 'nav link target size');
 assert.match(css, /header nav a:not\(:last-child\)\{display:none\}/, 'mobile hide scoped to header nav');
 assert.ok(!/(?<!header )nav a:not\(:last-child\)\{display:none\}/.test(css), 'no global nav-hide rule');
