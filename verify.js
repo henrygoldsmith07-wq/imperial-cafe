@@ -21,6 +21,17 @@ assert.equal(new Set(ids).size, ids.length, 'no duplicate IDs');
 for (const m of html.matchAll(/href="#([^"]*)"/g)) {
   if (m[1]) assert.ok(ids.includes(m[1]), `anchor #${m[1]} resolves`);
 }
+const labels = [...html.matchAll(/<label for="([^"]+)"/g)].map(m => m[1]);
+for (const id of ['name', 'service', 'date', 'notes']) {
+  assert.ok(labels.includes(id), `control #${id} has a label`);
+}
+const selectOptions = [...(html.match(/<select id="service">([\s\S]*?)<\/select>/)?.[1] || '')
+  .matchAll(/<option>([^<]+)<\/option>/g)].map(m => m[1]);
+for (const m of html.matchAll(/data-service="([^"]+)"/g)) {
+  assert.ok(selectOptions.includes(m[1]), `service link value "${m[1]}" matches a select option`);
+}
+assert.match(html, /class="hp" aria-hidden="true"/, 'honeypot hidden from assistive tech');
+assert.match(html, /id="website" tabindex="-1"/, 'honeypot not in tab order');
 
 for (const [label, doc] of [['index', html], ['404', notFound]]) {
   assert.match(doc, /http-equiv="Content-Security-Policy"/, `${label} CSP present`);
